@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Scanner</title>
+</head>
+<body>
+    <main>
+        <h1>Tax Scanner</h1>
+
+        <form action="/scan" method="post" enctype="multipart/form-data">
+            <label for="tax-form">Upload Form 1040</label>
+            <input
+                id="tax-form"
+                name="file"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                required
+            >
+            <button type="submit">Scan tax form</button>
+        </form>
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+
+        {% if tax_data %}
+            <h2>Review extracted information</h2>
+
+            <form action="/accept" method="post">
+                <label>
+                    Taxpayer name
+                    <input
+                        name="taxpayer_name"
+                        value="{{ tax_data.taxpayer_name or '' }}"
+                    >
+                </label>
+
+                <label>
+                    Filing status
+                    <input
+                        name="filing_status"
+                        value="{{ tax_data.filing_status or '' }}"
+                    >
+                </label>
+
+                <label>
+                    Wages
+                    <input
+                        name="wages"
+                        type="number"
+                        step="0.01"
+                        value="{{ tax_data.wages or '' }}"
+                    >
+                </label>
+
+                <label>
+                    Adjusted gross income
+                    <input
+                        name="adjusted_gross_income"
+                        type="number"
+                        step="0.01"
+                        value="{{ tax_data.adjusted_gross_income or '' }}"
+                    >
+                </label>
+
+                <label>
+                    Total tax
+                    <input
+                        name="total_tax"
+                        type="number"
+                        step="0.01"
+                        value="{{ tax_data.total_tax or '' }}"
+                    >
+                </label>
+
+                <label>
+                    Refund amount
+                    <input
+                        name="refund_amount"
+                        type="number"
+                        step="0.01"
+                        value="{{ tax_data.refund_amount or '' }}"
+                    >
+                </label>
+
+                <button type="submit">Accept</button>
+            </form>
+        {% endif %}
+
+        {% if saved %}
+            <p>Tax return accepted and saved.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
