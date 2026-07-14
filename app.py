@@ -1,4 +1,5 @@
 import io
+import logging
 
 from pathlib import Path
 
@@ -19,6 +20,7 @@ Base.metadata.create_all(bind=engine)
 
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
+logger = logging.getLogger(__name__)
 
 @app.get("/")
 def index(request: Request):
@@ -167,8 +169,10 @@ def accept_tax_return(
         database.commit()
         database.refresh(tax_return)
 
-    except Exception as exc:
+    except Exception:
         database.rollback()
+
+        logger.exception("Failed to save the accepted tax return.")
 
         return templates.TemplateResponse(
             request=request,
@@ -176,7 +180,7 @@ def accept_tax_return(
             context={
                 "tax_data": None,
                 "saved": False,
-                "error": f"The tax return could not be saved: {exc}",
+                "error": "The tax return could not be saved.",
             },
             status_code=500,
         )

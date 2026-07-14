@@ -13,13 +13,13 @@ load_dotenv()
 
 def pdf_to_images(pdf_bytes: bytes) -> list[Image.Image]:
     """
-    Converts the every page of an uploaded PDF into a PIL Image.
+    Converts every page of an uploaded PDF into a PIL Image.
 
     Args:
         pdf_bytes: Raw bytes of the uploaded PDF.
 
     Returns:
-        The first page of the PDF as a PIL Image.
+        A list of PIL Images, with one image for each PDF page.
     """
 
     images: list[Image.Image] = []
@@ -53,7 +53,7 @@ def extract_tax_data(images: list[Image.Image]) -> dict[str, Any]:
     caller.
 
     Args:
-        image_bytes: Raw bytes of the uploaded image.
+        images: Images representing every page of the uploaded tax form.
 
     Returns:
         A dictionary containing the extracted tax information.

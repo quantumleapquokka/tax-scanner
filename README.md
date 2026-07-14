@@ -22,13 +22,13 @@ Copy the example environment file.
 cp .env.example .env
 ```
 
-Replace
+Replace/Insert 
 
 ```env
-your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-with your own Gemini API key.
+with your own Gemini API key. (can get API key for free)
 
 Run
 
