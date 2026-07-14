@@ -26,72 +26,69 @@
         {% endif %}
 
         {% if tax_data %}
-            <h2>Review extracted information</h2>
+<section>
+    <h2>Review extracted information</h2>
 
-            <form action="/accept" method="post">
-                <label>
-                    Taxpayer name
-                    <input
-                        name="taxpayer_name"
-                        value="{{ tax_data.taxpayer_name or '' }}"
-                    >
-                </label>
+    <form action="/accept" method="post">
+        <label for="taxpayer-name">Taxpayer name</label>
+        <input
+            id="taxpayer-name"
+            name="taxpayer_name"
+            value="{{ tax_data.taxpayer_name or '' }}"
+            required
+        >
 
-                <label>
-                    Filing status
-                    <input
-                        name="filing_status"
-                        value="{{ tax_data.filing_status or '' }}"
-                    >
-                </label>
+        <label for="filing-status">Filing status</label>
+        <input
+            id="filing-status"
+            name="filing_status"
+            value="{{ tax_data.filing_status or '' }}"
+        >
 
-                <label>
-                    Wages
-                    <input
-                        name="wages"
-                        type="number"
-                        step="0.01"
-                        value="{{ tax_data.wages or '' }}"
-                    >
-                </label>
+        <label for="wages">Wages</label>
+        <input
+            id="wages"
+            name="wages"
+            type="number"
+            step="0.01"
+            value="{{ tax_data.wages or '' }}"
+        >
 
-                <label>
-                    Adjusted gross income
-                    <input
-                        name="adjusted_gross_income"
-                        type="number"
-                        step="0.01"
-                        value="{{ tax_data.adjusted_gross_income or '' }}"
-                    >
-                </label>
+        <label for="agi">Adjusted gross income</label>
+        <input
+            id="agi"
+            name="adjusted_gross_income"
+            type="number"
+            step="0.01"
+            value="{{ tax_data.adjusted_gross_income or '' }}"
+        >
 
-                <label>
-                    Total tax
-                    <input
-                        name="total_tax"
-                        type="number"
-                        step="0.01"
-                        value="{{ tax_data.total_tax or '' }}"
-                    >
-                </label>
+        <label for="total-tax">Total tax</label>
+        <input
+            id="total-tax"
+            name="total_tax"
+            type="number"
+            step="0.01"
+            value="{{ tax_data.total_tax or '' }}"
+        >
 
-                <label>
-                    Refund amount
-                    <input
-                        name="refund_amount"
-                        type="number"
-                        step="0.01"
-                        value="{{ tax_data.refund_amount or '' }}"
-                    >
-                </label>
+        <label for="refund">Refund amount</label>
+        <input
+            id="refund"
+            name="refund_amount"
+            type="number"
+            step="0.01"
+            value="{{ tax_data.refund_amount or '' }}"
+        >
 
-                <button type="submit">Accept</button>
-            </form>
-        {% endif %}
+        <button type="submit">Accept</button>
+    </form>
+</section>
+{% endif %}
 
-        {% if saved %}
-            <p>Tax return accepted and saved.</p>
-        {% endif %}
+{% if saved %}
+<p>Tax return accepted and saved successfully.</p>
+{% endif %}
     </main>
 </body>
 </html>

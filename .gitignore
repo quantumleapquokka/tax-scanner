@@ -2,5 +2,4 @@
 .env
 __pycache__/
 *.pyc
-database.db
-uploads/
+tax_scanner.db

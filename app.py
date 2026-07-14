@@ -2,16 +2,21 @@ import io
 
 from pathlib import Path
 
-from fastapi import FastAPI, Request, UploadFile, File
+from fastapi import FastAPI, Request, UploadFile, File, Form
 from fastapi.templating import Jinja2Templates
 from PIL import Image
 
 from extraction import extract_tax_data, pdf_to_images
+from database import Base, SessionLocal, engine
+from models import TaxReturn
 
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
+
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
@@ -110,6 +115,81 @@ async def scan_tax_form(
         context={
             "tax_data": tax_data,
             "saved": False,
+            "error": None,
+        },
+    )
+
+@app.post("/accept")
+def accept_tax_return(
+    request: Request,
+    taxpayer_name: str = Form(...),
+    filing_status: str | None = Form(None),
+    wages: float | None = Form(None),
+    adjusted_gross_income: float | None = Form(None),
+    total_tax: float | None = Form(None),
+    refund_amount: float | None = Form(None),
+):
+    """
+    Saves the tax information reviewed and accepted by the user.
+
+    The submitted values may differ from Gemini's original extraction
+    because the review form allows the user to correct OCR errors before
+    saving.
+
+    Args:
+        request: The incoming HTTP request.
+        taxpayer_name: Reviewed taxpayer name.
+        filing_status: Reviewed filing status.
+        wages: Reviewed wage amount.
+        adjusted_gross_income: Reviewed adjusted gross income.
+        total_tax: Reviewed total tax.
+        refund_amount: Reviewed refund amount.
+
+    Returns:
+        The main page with a confirmation message after the record has
+        been saved successfully.
+    """
+
+    database = SessionLocal()
+
+    try:
+        tax_return = TaxReturn(
+            taxpayer_name=taxpayer_name,
+            filing_status=filing_status,
+            wages=wages,
+            adjusted_gross_income=adjusted_gross_income,
+            total_tax=total_tax,
+            refund_amount=refund_amount,
+            status="accepted",
+        )
+
+        database.add(tax_return)
+        database.commit()
+        database.refresh(tax_return)
+
+    except Exception as exc:
+        database.rollback()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="index.html",
+            context={
+                "tax_data": None,
+                "saved": False,
+                "error": f"The tax return could not be saved: {exc}",
+            },
+            status_code=500,
+        )
+
+    finally:
+        database.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "tax_data": None,
+            "saved": True,
             "error": None,
         },
     )
