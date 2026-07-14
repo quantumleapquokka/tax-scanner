@@ -1,8 +1,12 @@
+import io
+
 from pathlib import Path
 
 from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
-from extraction import extract_tax_data
+from PIL import Image
+
+from extraction import extract_tax_data, pdf_to_images
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -57,10 +61,11 @@ async def scan_tax_form(
         - extracted tax data, or
         - an error message if processing fails.
     """
-    
+
     allowed_types = {
         "image/png",
         "image/jpeg",
+        "application/pdf",
     }
 
     if file.content_type not in allowed_types:
@@ -70,14 +75,23 @@ async def scan_tax_form(
             context={
                 "tax_data": None,
                 "saved": False,
-                "error": "Upload a PNG or JPEG image.",
+                "error": "Upload a PDF, PNG, or JPEG image.",
             },
             status_code=400,
         )
 
     try:
-        image_bytes = await file.read()
-        tax_data = extract_tax_data(image_bytes)
+        file_bytes = await file.read()
+
+        if file.content_type == "application/pdf":
+            images = pdf_to_images(file_bytes)
+        else:
+            # Wrap a single PNG or JPEG in a list so the extraction function always receives the same input type.
+            image = Image.open(io.BytesIO(file_bytes)).convert("RGB")
+            images = [image]
+
+        tax_data = extract_tax_data(images)
+
     except Exception as exc:
         return templates.TemplateResponse(
             request=request,
