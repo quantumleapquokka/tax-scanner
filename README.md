@@ -1,3 +1,10 @@
+## Features
+
+- Upload IRS Form 1040 (PDF or image)
+- OCR using Gemini Vision
+- Review extracted fields
+- Save accepted data to SQLite
+
 ## Installation
 
 Clone the repository.
