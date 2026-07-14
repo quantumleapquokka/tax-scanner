@@ -4,6 +4,7 @@
 - OCR using Gemini Vision
 - Review extracted fields
 - Save accepted data to SQLite
+- Sample Form 1040 included for testing
 
 ## Installation
 
